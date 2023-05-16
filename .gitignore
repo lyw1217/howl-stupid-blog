@@ -258,3 +258,4 @@ pyinstaller*
 *.log.*
 *.zip
 secrets.json
+posts/*
