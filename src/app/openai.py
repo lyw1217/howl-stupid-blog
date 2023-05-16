@@ -126,17 +126,29 @@ def make_image_dall_e(subject, prompt):
         n=1,
         size="1024x1024"
     )
-    image_url = response['data'][0]['url']
-    res = requests.get(image_url)
-    img = Image.open(BytesIO(res.content))
-
-    if SYS_PLATFORM == 'Windows':
-        path = os.path.join(ROOT_DIR, f"img\{subject}.png")
-    else :
-        path = os.path.join(ROOT_DIR, f"img/{subject}.png")
+    
+    if response['data'] is not None :
+        image_url = response['data'][0]['url']
         
-    img.save(path)
+        res = requests.get(image_url)
+        
+        img = Image.open(BytesIO(res.content))
 
-    root_logger.critical(f"dall-e 이미지 저장 성공, path = {path}")
+        if SYS_PLATFORM == 'Windows':
+            path = os.path.join(ROOT_DIR, f"img\{subject}.png")
+        else :
+            path = os.path.join(ROOT_DIR, f"img/{subject}.png")
+            
+        img.save(path)
+
+        root_logger.critical(f"dall-e 이미지 저장 성공, path = {path}")
+    else :
+        if SYS_PLATFORM == 'Windows':
+            path = os.path.join(ROOT_DIR, f"img/default.png")
+        else :
+            path = os.path.join(ROOT_DIR, f"img/default.png")
+        
+        root_logger.critical(f"Fail. dall-e 이미지 저장 실패, 기본 이미지 사용 path = {path}")
+
 
     return path

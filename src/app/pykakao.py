@@ -1,5 +1,6 @@
 from PyKakao import Karlo
 from app.config import *
+from app.openai import *
 
 '''
 kako karlo에게 이미지 생성 요청하는 함수
@@ -28,10 +29,11 @@ def make_image_karlo(subject, prompt) :
 
         root_logger.critical(f"karlo 이미지 저장 성공, path = {path}")
     else :
-        if SYS_PLATFORM == 'Windows':
-            path = os.path.join(ROOT_DIR, f"img/default.png")
-        else :
-            path = os.path.join(ROOT_DIR, f"img/default.png")
+        '''
+        실패 시 dall-e 사용
+        '''
+        root_logger.critical(f"Fail. karlo 이미지 저장 실패, Dall-E 사용")
+        path = make_image_dall_e(post_subject, prompt)
 
     return path
 

@@ -27,6 +27,8 @@ def post_process(input_value) :
     #post_to_tistory_markdown(post_subject, post_path)
     post_to_tistory(post_subject, post_path)
 
+
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -44,7 +46,7 @@ def process():
     else:
         return '잘못된 요청입니다.'
 
-@app.route('/uploadpost', methods=['GET'])
+@app.route('/uploadpost', methods=['GET', 'POST'])
 def uploadpost():
     if request.method == 'GET' or request.method == 'POST' :
         input_value = request.args.get('input')
