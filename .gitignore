@@ -259,3 +259,4 @@ pyinstaller*
 *.zip
 secrets.json
 posts/*
+img/*
