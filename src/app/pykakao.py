@@ -12,20 +12,26 @@ def make_image_karlo(subject, prompt) :
     img_dict = api.text_to_image(prompt, 1)
 
     # 생성된 이미지 정보
-    img_str = img_dict.get("images")[0].get('image')
+    if img_dict.get("images") is not None :
+        img_str = img_dict.get("images")[0].get('image')
 
-    # base64 string을 이미지로 변환
-    img = api.string_to_image(base64_string = img_str, mode = 'RGBA')
+        # base64 string을 이미지로 변환
+        img = api.string_to_image(base64_string = img_str, mode = 'RGBA')
 
-    # 이미지 저장하기
-    if SYS_PLATFORM == 'Windows':
-        path = os.path.join(ROOT_DIR, f"img\{subject}.png")
+        # 이미지 저장하기
+        if SYS_PLATFORM == 'Windows':
+            path = os.path.join(ROOT_DIR, f"img\{subject}.png")
+        else :
+            path = os.path.join(ROOT_DIR, f"img/{subject}.png")
+
+        img.save(path)
+
+        root_logger.critical(f"karlo 이미지 저장 성공, path = {path}")
     else :
-        path = os.path.join(ROOT_DIR, f"img/{subject}.png")
-
-    img.save(path)
-
-    root_logger.critical(f"karlo 이미지 저장 성공, path = {path}")
+        if SYS_PLATFORM == 'Windows':
+            path = os.path.join(ROOT_DIR, f"img/default.png")
+        else :
+            path = os.path.join(ROOT_DIR, f"img/default.png")
 
     return path
 
