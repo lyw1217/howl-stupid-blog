@@ -66,8 +66,9 @@ with open(CONFIG_PATH) as json_file:
     configs = json.load(json_file)
 
     INTERVAL = int(configs['interval'])
-    GPT_MODEL = configs['gpt-model']
     MAX_TOKEN = int(configs['max_token'])
+    GPT_MODEL = configs['gpt-model']
+    BLOG_NAME = configs['blogname']
 
 
 if SYS_PLATFORM == 'Windows':
@@ -83,10 +84,10 @@ if os.path.isfile(SECRETS_PATH):
         except KeyError :
             root_logger.critical(f"No TISTORY_APP_ID.")
         try :
-            TISTORY_KEY = sec['TISTORY_KEY']
-            root_logger.critical(f'Loaded TISTORY_KEY')
+            TISTORY_SECRET = sec['TISTORY_SECRET']
+            root_logger.critical(f'Loaded TISTORY_SECRET')
         except KeyError :
-            root_logger.critical(f"No TISTORY_KEY.")
+            root_logger.critical(f"No TISTORY_SECRET.")
         try :
             TISTORY_ACCESS_TOKEN = sec['TISTORY_ACCESS_TOKEN']
             root_logger.critical(f'Loaded TISTORY_ACCESS_TOKEN')

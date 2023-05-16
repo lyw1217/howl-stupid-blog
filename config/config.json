@@ -1,6 +1,7 @@
 {
     "interval": 480,
     "max_token": 200,
-    "gpt-model": "gpt-3.5-turbo"
+    "gpt-model": "gpt-3.5-turbo",
+    "blogname": "nextdoorfire"
 }
   

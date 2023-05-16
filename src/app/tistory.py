@@ -35,3 +35,9 @@ https://github.com/jojoldu/markdown-tistory
 def post_to_tistory_markdown(path, title, content):
     out = subprocess.run(['/usr/local/bin/markdown-tistory', 'write' , path], capture_output=True)
     root_logger.critical(f"{out.stdout}")
+
+'''
+markdown 맨 뒤에 이미지를 추가하는 함수
+'''
+def insert_image_into_markdown(md_content, img_path):
+    return f"{md_content} \n\n\n ![image]({img_path})"
