@@ -33,7 +33,7 @@ def make_image_karlo(subject, prompt) :
         실패 시 dall-e 사용
         '''
         root_logger.critical(f"Fail. karlo 이미지 저장 실패, Dall-E 사용")
-        path = make_image_dall_e(post_subject, prompt)
+        path = make_image_dall_e(subject, prompt)
 
     return path
 

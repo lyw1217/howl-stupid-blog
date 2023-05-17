@@ -39,4 +39,4 @@ if __name__ == "__main__":
     t.daemon = True
     t.start()        # sub thread의 run 메서드를 호출
 
-    app.run(port=8080)
+    app.run(debug=True, port=8080)

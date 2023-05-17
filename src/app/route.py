@@ -3,6 +3,7 @@ from app import *
 
 import threading
 import time
+import random
 
 app = Flask(__name__)
 
@@ -10,6 +11,7 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
+'''
 @app.route('/process', methods=['GET', 'POST'])
 def process():
     if request.method == 'POST':
@@ -20,6 +22,33 @@ def process():
         return f"'{input_value}'를 주제로 포스팅 완료!"
     else:
         return '잘못된 요청입니다.'
+'''
+@app.route('/process', methods=['GET', 'POST'])
+def add():
+    if request.method == 'POST':
+
+        if SYS_PLATFORM == 'Windows':
+            SUBJECT_PATH = os.path.join(ROOT_DIR, 'config\subject.json')
+        else:
+            SUBJECT_PATH = os.path.join(ROOT_DIR, 'config/subject.json')
+        if os.path.isfile(SUBJECT_PATH):
+            with open(SUBJECT_PATH) as json_file:
+                subjects = json.load(json_file)
+        else :
+            root_logger.critical("subject.json 파일 읽기 실패")
+            return f"주제 : '{input_value}', 포스팅 대기열 추가 실패.. 다시 시도해주세요."
+
+        input_value = request.form['myInput']
+        if len(input_value) > 0:
+            subjects['subject'].append(input_value)
+
+        with open(SUBJECT_PATH, 'w') as json_file:
+            json.dump(subjects, json_file)
+
+        return f"주제 : '{input_value}', 포스팅 대기열 추가 완료! ({len(subjects['subject'])}개 남음)"
+    else:
+        return '잘못된 요청입니다.'
+
 
 @app.route('/uploadpost', methods=['GET', 'POST'])
 def uploadpost():
@@ -41,7 +70,8 @@ class Worker(threading.Thread):
         super().__init__()
 
     def run(self):
-        root_logger.critical("subject upload daemon 시작")
+        root_logger.critical(f"subject upload daemon 시작, interval = {INTERVAL}")
+        time.sleep(5)
         while True:
             if SYS_PLATFORM == 'Windows':
                 SUBJECT_PATH = os.path.join(ROOT_DIR, 'config\subject.json')
@@ -55,16 +85,19 @@ class Worker(threading.Thread):
                 return None
             
             if len(subjects['subject']) > 0 :
-                if len(subjects['subject'][0]) > 0:
-                    post_process(subjects['subject'][0])
+                s = subjects['subject'][0]
+                
                 del subjects['subject'][0]
-
                 with open(SUBJECT_PATH, 'w') as json_file:
                     json.dump(subjects, json_file)
+
+                if len(s) > 0:
+                    post_process(s)
                 
             root_logger.critical(f"남은 subject 개수 : {len(subjects['subject'])}")
 
-            time.sleep(INTERVAL * 60)
+            # 주기가 너무 일정하지 않게끔
+            time.sleep(INTERVAL * random.randint(40, 60) + random.randint(0, 100))
 
 def conscience(content):
     return f"{content} \n\n\n\n 이 글은 ChatGPT API를 이용하여 자동으로 작성된 글입니다."
