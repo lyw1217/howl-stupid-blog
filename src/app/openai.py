@@ -107,7 +107,7 @@ def make_prompt_for_image(subject, max_token=200):
 
     # 사용자 메시지 추가
     messages.append(
-        {"role": "user", "content": "Condense up to 4 outward description to focus on nouns and adjectives separated by ','" }
+        {"role": "user", "content": "Condense up to 6 outward description to focus on nouns and adjectives separated by ','" }
     )
 
     # ChatGPT API 호출하기
