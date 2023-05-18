@@ -1,9 +1,11 @@
 from app import *
 
-from threading import Thread
+import asyncio
 import time
 import random
 import datetime
+
+
 
 def print_initlog():
     root_logger.critical(r"██   ██  ██████  ██     ██ ██                ")
@@ -38,13 +40,9 @@ def print_initlog():
 '''
 쓰레드
 '''
-def th_subject_upload():
+async def th_subject_upload():
     root_logger.critical(f"subject upload thread 시작, interval = {INTERVAL}")
     while True:
-        if SYS_PLATFORM == 'Windows':
-            SUBJECT_PATH = os.path.join(ROOT_DIR, 'config\subject.json')
-        else:
-            SUBJECT_PATH = os.path.join(ROOT_DIR, 'config/subject.json')
         if os.path.isfile(SUBJECT_PATH):
             with open(SUBJECT_PATH) as json_file:
                 subjects = json.load(json_file)
@@ -59,8 +57,9 @@ def th_subject_upload():
             with open(SUBJECT_PATH, 'w') as json_file:
                 json.dump(subjects, json_file, ensure_ascii=False)
 
+            # 주 프로세스 실행
             if len(s) > 0:
-                post_process(s)
+                await post_process(s)
         
         next_interval = INTERVAL * random.randint(40, 60)
 
@@ -68,7 +67,7 @@ def th_subject_upload():
         root_logger.critical(f"다음 포스팅 예상 시간 : {datetime.datetime.now() + datetime.timedelta(seconds=next_interval)}")
 
         # 주기가 너무 일정하지 않게끔
-        time.sleep(next_interval)
+        await asyncio.sleep(next_interval)
 
 '''
 일말의 양심
@@ -83,7 +82,7 @@ def conscience(content, flag):
 '''
 포스트 업로드를 위한 메인 프로세스
 '''
-def post_process(input_value) :
+async def post_process(input_value) :
     root_logger.critical(f"{input_value}에 대한 글 작성 시작...")
     
     post_subject = input_value
@@ -123,15 +122,15 @@ def post_process(input_value) :
     post_to_tistory(kr_post_subject, kr_post_path)
     
     # 약 1~5분 뒤 영어 포스팅 업로드
-    time.sleep(random.randint(60, 300))
+    await asyncio.sleep(random.randint(60, 300))
     
     post_to_tistory(en_post_subject, en_post_path)
+
 
 if __name__ == "__main__":
 
     print_initlog()
 
-    t = Thread(target=th_subject_upload)
-    t.start()
+    asyncio.run(th_subject_upload())
 
     flask_app.run(debug=True, port=8080)
