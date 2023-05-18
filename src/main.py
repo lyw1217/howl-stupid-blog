@@ -1,6 +1,6 @@
 from app import *
 
-import asyncio
+import multiprocessing
 import time
 import random
 import datetime
@@ -40,7 +40,7 @@ def print_initlog():
 '''
 쓰레드
 '''
-async def th_subject_upload():
+def th_subject_upload():
     root_logger.critical(f"subject upload thread 시작, interval = {INTERVAL}")
     while True:
         if os.path.isfile(SUBJECT_PATH):
@@ -59,7 +59,7 @@ async def th_subject_upload():
 
             # 주 프로세스 실행
             if len(s) > 0:
-                await post_process(s)
+                post_process(s)
         
         next_interval = INTERVAL * random.randint(40, 60)
 
@@ -67,7 +67,7 @@ async def th_subject_upload():
         root_logger.critical(f"다음 포스팅 예상 시간 : {datetime.datetime.now() + datetime.timedelta(seconds=next_interval)}")
 
         # 주기가 너무 일정하지 않게끔
-        await asyncio.sleep(next_interval)
+        time.sleep(next_interval)
 
 '''
 일말의 양심
@@ -82,7 +82,7 @@ def conscience(content, flag):
 '''
 포스트 업로드를 위한 메인 프로세스
 '''
-async def post_process(input_value) :
+def post_process(input_value) :
     root_logger.critical(f"{input_value}에 대한 글 작성 시작...")
     
     post_subject = input_value
@@ -122,15 +122,29 @@ async def post_process(input_value) :
     post_to_tistory(kr_post_subject, kr_post_path)
     
     # 약 1~5분 뒤 영어 포스팅 업로드
-    await asyncio.sleep(random.randint(60, 300))
+    time.sleep(random.randint(60, 300))
     
     post_to_tistory(en_post_subject, en_post_path)
 
 
+def webserver():
+    flask_app.run(debug=True, port=8080)
+
 if __name__ == "__main__":
 
     print_initlog()
+    
+    web_server_process = multiprocessing.Process(target=webserver)
+    other_action_process = multiprocessing.Process(target=th_subject_upload)
 
-    asyncio.run(th_subject_upload())
+    # 프로세스를 시작합니다.
+    web_server_process.start()
+    other_action_process.start()
 
-    flask_app.run(debug=True, port=8080)
+    # 프로세스가 완료될 때까지 기다립니다.
+    web_server_process.join()
+    other_action_process.join()
+
+    
+
+    
