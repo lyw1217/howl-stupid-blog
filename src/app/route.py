@@ -1,8 +1,9 @@
 #-*- coding:utf-8 -*-
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, make_response
 from app import *
 
 flask_app = Flask(__name__)
+flask_app.config['JSON_AS_ASCII'] = False
 
 if SYS_PLATFORM == 'Windows':
     SUBJECT_PATH = os.path.join(ROOT_DIR, 'config\subject.json')
@@ -56,7 +57,7 @@ def uploadpost():
             root_logger.critical("subject.json 파일 읽기 실패")
             return f"포스팅 대기열 조회 실패.. 다시 시도해주세요."
         
-        return jsonify(subjects)
+        return make_response(json.dumps(subjects, ensure_ascii=False, indent=4))
     else:
         return '잘못된 요청입니다.'
 
