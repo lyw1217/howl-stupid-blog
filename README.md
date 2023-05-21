@@ -36,5 +36,15 @@ API 사용법은 [참고 문헌](#참고-문헌)에 있는 [블로그](https://w
 
 이미지는 Karlo를 베이스로 하지만 Karlo에서 이미지 생성에 실패하면 DALL-E에서 생성한다.
 
+## 티스토리 API 막힘(230520)
+
+```
+{'tistory': {'status': '403', 'error_message': '이 블로그는 내부 정책으로 OPEN API 사용할 수 없습니다.'}}
+```
+
+티스토리 API를 제한당했다.
+
+깃헙블로그로 변경하려고 한다.
+
 ### 참고 문헌
 - https://wooiljeong.github.io/python/chatgpt-api/
